@@ -10,6 +10,7 @@ REST API for tracking job applications: add a vacancy, follow its status through
 - Data isolation: a user can only see and change their own applications
 - Request validation with field-level error messages
 - Unit tests (JUnit 5, Mockito)
+- Database migrations with Flyway
 
 ## Tech stack
 
@@ -83,7 +84,6 @@ mvnw.cmd test -Dtest="JwtUtilTest,JobApplicationServiceTest"
 ## Roadmap
 
 - Integration tests with Testcontainers
-- Database migrations (Flyway)
 - Statistics endpoint (applications per status, interview and offer rates)
 - Resume storage and upload
 - AI-based resume-to-vacancy matching and missing-skills suggestions
