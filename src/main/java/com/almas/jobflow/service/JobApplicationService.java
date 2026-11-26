@@ -11,6 +11,9 @@ import com.almas.jobflow.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.almas.jobflow.dto.StatsResponse;
+import java.util.EnumMap;
+import java.util.Map;
 
 @Service
 public class JobApplicationService {
@@ -70,5 +73,28 @@ public class JobApplicationService {
         application.setAppliedDate(request.appliedDate());
         application.setInterviewDate(request.interviewDate());
         application.setNotes(request.notes());
+    }
+
+    public StatsResponse getStats(String ownerEmail) {
+        Map<ApplicationStatus, Long> byStatus = new EnumMap<>(ApplicationStatus.class);
+        for (ApplicationStatus status : ApplicationStatus.values()) {
+            byStatus.put(status, 0L);
+        }
+        for (JobApplicationRepository.StatusCount row : repository.countByStatusForOwner(ownerEmail)) {
+            byStatus.put(row.getStatus(), row.getTotal());
+        }
+
+        long total = byStatus.values().stream().mapToLong(Long::longValue).sum();
+        long offers = byStatus.get(ApplicationStatus.OFFER);
+        long interviews = byStatus.get(ApplicationStatus.INTERVIEW) + offers;
+
+        return new StatsResponse(total, byStatus, rate(interviews, total), rate(offers, total));
+    }
+
+    private double rate(long part, long total) {
+        if (total == 0) {
+            return 0.0;
+        }
+        return Math.round(part * 1000.0 / total) / 1000.0;
     }
 }

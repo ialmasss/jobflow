@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import com.almas.jobflow.dto.StatsResponse;
 
 @RestController
 @RequestMapping("/api/applications")
@@ -45,6 +46,11 @@ public class JobApplicationController {
             @RequestParam(required = false) ApplicationStatus status,
             @PageableDefault(size = 10, sort = "appliedDate", direction = Sort.Direction.DESC) Pageable pageable) {
         return new PagedModel<>(service.getAll(authentication.getName(), status, pageable));
+    }
+
+    @GetMapping("/stats")
+    public StatsResponse getStats(Authentication authentication) {
+        return service.getStats(authentication.getName());
     }
 
     @GetMapping("/{id}")
